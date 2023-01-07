@@ -57,7 +57,7 @@ class Manhwa18Client(MangaClient):
 
         urls = dict()
 
-        for item in manga_items:
+        for item in items:
             manga_url = urljoin(self.base_url.geturl(), item.findNext('a').get('href'))
 
             if manga_url in urls:

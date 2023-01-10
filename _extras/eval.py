@@ -2,12 +2,12 @@ import io
 import sys
 import traceback
 
-from pyrogram import Client, filters
+from bot import bot, filters
 from . import SUDOS
 
 MAX_MESSAGE_LENGTH = 4096
 
-@Client.on_message(filters=filters.command("eval") & filters.user(SUDOS), group=1)
+@bot.on_message(filters=filters.command("eval") & filters.user(SUDOS), group=1)
 async def _(client, message):
     status_message = await message.reply_text("Processing ...")
     try:

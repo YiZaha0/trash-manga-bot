@@ -595,7 +595,7 @@ async def all_page_click(client: Client, callback: CallbackQuery):
   
   await status.delete()
   
-  status, options_q = await ask_q(callback.message, "<b>Tell me the chapter files format. You can choose in ↓</b>\n\n→<code>PDF</code>\n→<code>CBZ/code>\n→<code>BOTH</code>")
+  status, options_q = await ask_q(callback.message, "<b>Tell me the chapter files format. You can choose in ↓</b>\n\n→<code>PDF</code>\n→<code>CBZ</code>\n→<code>BOTH</code>")
   
   file_option = file_options.get(options_q.text.lower())
   if not file_option:

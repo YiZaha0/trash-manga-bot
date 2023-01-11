@@ -326,7 +326,7 @@ async def on_unknown_command(client: Client, message: Message):
 
 
 @bot.on_message(filters=filters.text)
-async def on_message(client, message: Messageq;l
+async def on_message(client, message: Message):
     language_query[f"lang_None_{hash(message.text)}"] = (None, message.text)
     for language in plugin_dicts.keys():
         language_query[f"lang_{language}_{hash(message.text)}"] = (language, message.text)

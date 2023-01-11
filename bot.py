@@ -150,7 +150,7 @@ async def add_manga_options(chat_id, output):
     pass
 
 async def ask_q(msg: Message, text: str, as_reply: bool = False, filters=filters.text) -> Tuple[Message, Message]:
-  status = await msg.reply_text(text, quote=as_reply)
+  status = await msg.reply(text, quote=as_reply)
   listener = await bot.listen(msg.chat.id, filters=filters)
   
   if listener.text in ["stop", "/quit", "/cancel", "no"]:
@@ -276,15 +276,15 @@ async def add_msub(client: Client, message: Message):
   try:
     _, manga_url, manga_chat, file_mode = message.text.split(" ")
   except:
-    _, l = await ask_q("<b>Ok, Tell Me the Manga's Url.</b>")
+    _, l = await ask_q(message, "<b>Ok, Tell Me the Manga's Url.</b>")
     await _.delete()
     manga_url = l.text
     
-    _, l = await ask_q("<b>Now Send the Chat Id.")
+    _, l = await ask_q(message, "<b>Now Send the Chat Id.")
     await _.delete()
     manga_chat = l.text 
     
-    _, l = await ask_q("<b>Select the Format of Chapter Files. You can choose in ↓</b>\n\n→<code>PDF</code>\n→<code>CBZ</code>\n→<code>BOTH</code>")
+    _, l = await ask_q(message, "<b>Select the Format of Chapter Files. You can choose in ↓</b>\n\n→<code>PDF</code>\n→<code>CBZ</code>\n→<code>BOTH</code>")
     await _.delete()
     file_mode = l.text
    

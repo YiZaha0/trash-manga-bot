@@ -149,9 +149,14 @@ async def add_manga_options(chat_id, output):
   except:
     pass
 
-async def ask_q(msg: Message, text: str, filters=filters.text) -> Tuple[Message, Message]:
-  status = await msg.reply_text(text)
+async def ask_q(msg: Message, text: str, as_reply: bool = False, filters=filters.text) -> Tuple[Message, Message]:
+  status = await msg.reply_text(text, quote=as_reply)
   listener = await bot.listen(msg.chat.id, filters=filters)
+  
+  if listener.text in ["stop", "/quit", "/cancel", "no"]:
+    await status.delete()
+    raise ValueError
+    
   return status, listener 
 
 async def get_manga_thumb(card: MangaCard) -> str:
@@ -271,8 +276,18 @@ async def add_msub(client: Client, message: Message):
   try:
     _, manga_url, manga_chat, file_mode = message.text.split(" ")
   except:
-    return
-
+    _, l = await ask_q("<b>Ok, Tell Me the Manga's Url.</b>")
+    await _.delete()
+    manga_url = l.text
+    
+    _, l = await ask_q("<b>Now Send the Chat Id.")
+    await _.delete()
+    manga_chat = l.text 
+    
+    _, l = await ask_q("<b>Select the Format of Chapter Files. You can choose in ↓</b>\n\n→<code>PDF</code>\n→<code>CBZ</code>\n→<code>BOTH</code>")
+    await _.delete()
+    file_mode = l.text
+   
   try:
     int(manga_chat)
   except:
@@ -281,7 +296,7 @@ async def add_msub(client: Client, message: Message):
   file_option = file_options.get(file_mode.lower().strip())
   if not file_mode:
     return await message.reply_text("<b>Invalid File Mode Given, Cancelled the Process.</b>")
-  await add_manga_options(chat_id, file_option)
+  await add_manga_options(manga_chat, file_option)
   
   sub = await db.get(Subscription, (manga_url, manga_chat))
   if not sub:
@@ -571,10 +586,7 @@ async def full_page_click(client: Client, callback: CallbackQuery):
 
 async def all_page_click(client: Client, callback: CallbackQuery):
   chapters_data = all_pages[callback.data]
-  status, chat_q = await ask_q(callback.message, "Ok, Send Me the Id of Chat where you want to Bulk Upload this Manga.")
-  
-  if chat_q.text.lower() in ["stop", "/quit"]:
-    return
+  status, chat_q = await ask_q(callback.message, "<b>Ok, Send Me the Id of Chat where you want to Bulk Upload this Manga.</b>", as_reply=True)
   
   try:
     chat_id = int(chat_q.text)
@@ -583,7 +595,7 @@ async def all_page_click(client: Client, callback: CallbackQuery):
   
   await status.delete()
   
-  status, options_q = await ask_q(callback.message, "Tell me the chapter files format. You can choose in ↓\n→<code>Pdf</code>\n→<code>Cbz</code>\n→<code>Both</code>")
+  status, options_q = await ask_q(callback.message, "<b>Tell me the chapter files format. You can choose in ↓</b>\n\n→<code>PDF</code>\n→<code>CBZ/code>\n→<code>BOTH</code>")
   
   file_option = file_options.get(options_q.text.lower())
   if not file_option:
@@ -591,7 +603,9 @@ async def all_page_click(client: Client, callback: CallbackQuery):
    
   await add_manga_options(chat_id, file_option)
   
-  await status.edit_text("All Set, Bulk Uploading of all Chapters Started...")
+  await status.delete()
+  
+ status = await callback.message.reply_text("<b>All Set, Bulk Uploading of all Chapters Started, Will take Time to Upload...</b>")
   
   for chapter_data in reversed(chapters_data):
         try:

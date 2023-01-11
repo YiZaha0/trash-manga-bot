@@ -280,7 +280,7 @@ async def add_msub(client: Client, message: Message):
     await _.delete()
     manga_url = l.text
     
-    _, l = await ask_q(message, "<b>Now Send the Chat Id.")
+    _, l = await ask_q(message, "<b>Now Send the Chat Id.</b>")
     await _.delete()
     manga_chat = l.text 
     
@@ -302,7 +302,7 @@ async def add_msub(client: Client, message: Message):
   if not sub:
     await db.add(Subscription(url=manga_url, user_id=manga_chat))
     
-  await message.reply(f"Ok, Added Manga Subscription.\n\nUrl: <code>{manga_url}</code>\nChat: <code>{manga_chat}</code>\nFile Mode: <code>{file_mode.title()}</code>")
+  await message.reply(f"</b>Added New Manga Subscription.</b>\n\n</b>Url :</b> <code>{manga_url}</code>\n<b>Chat :</b> <code>{manga_chat}</code>\n</b>File Mode :</b> <code>{file_mode.upper()}</code>")
 
 @bot.on_message(filters=filters.command("rmsub") & filters.user(SUDOS))
 async def rm_msub(client: Message, message: Message):

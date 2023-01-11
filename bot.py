@@ -151,7 +151,7 @@ async def add_manga_options(chat_id, output):
 
 async def ask_q(msg: Message, text: str, filters=filters.text) -> Tuple[Message, Message]:
   status = await msg.reply_text(text)
-  listener = await app.listen(msg.chat.id, filters=filters)
+  listener = await bot.listen(msg.chat.id, filters=filters)
   return status, listener 
 
 async def get_manga_thumb(card: MangaCard) -> str:

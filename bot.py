@@ -270,7 +270,7 @@ async def add_msub(client: Client, message: Message):
   try:
     _, manga_url, manga_chat, file_mode = message.text.split(" ")
   except:
-    pass
+    return
 
   try:
     int(manga_chat)
@@ -293,7 +293,7 @@ async def rm_msub(client: Message, message: Message):
   try:
     _, url, chat = message.text.split(" ")
   except:
-    pass
+    return
   db = DB()
   sub = await db.get(Subscription, (url, chat))
   if not sub:

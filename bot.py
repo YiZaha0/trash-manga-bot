@@ -609,7 +609,7 @@ async def all_page_click(client: Client, callback: CallbackQuery):
   
   for chapter_data in reversed(chapters_data):
         try:
-            await chapter_click(client, chapter_data, int(chat_q.text))
+            await chapter_click(client, chapter_data, chat_id)
         except Exception as e:
             print(e)
         await asyncio.sleep(0.5)

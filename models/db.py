@@ -20,13 +20,13 @@ class ChapterFile(SQLModel, table=True):
 
 
 class MangaOutput(SQLModel, table=True):
-    user_id: str = Field(primary_key=True, regex=r'\d+')
+    user_id: str = Field(primary_key=True)
     output: int = Field
 
 
 class Subscription(SQLModel, table=True):
     url: str = Field(primary_key=True)
-    user_id: str = Field(primary_key=True, regex=r'\d+')
+    user_id: str = Field(primary_key=True)
 
 
 class LastChapter(SQLModel, table=True):

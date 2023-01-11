@@ -1,3 +1,4 @@
+import os
 import enum
 import shutil
 from ast import arg
@@ -32,10 +33,12 @@ pdfs: Dict[str, str] = dict()
 paginations: Dict[int, Pagination] = dict()
 queries: Dict[str, Tuple[MangaClient, str]] = dict()
 full_pages: Dict[str, List[str]] = dict()
+all_pages: Dict[str, List[str]] = dict()
 favourites: Dict[str, MangaCard] = dict()
 language_query: Dict[str, Tuple[str, str]] = dict()
 users_in_channel: Dict[int, dt.datetime] = dict()
 locks: Dict[int, asyncio.Lock] = dict()
+file_options: Dict[str, int] = {"pdf": 2147483641, "cbz": 2147483642, "both": 2147483643}
 
 plugin_dicts: Dict[str, Dict[str, MangaClient]] = {
     "🇬🇧 EN": {
@@ -130,7 +133,37 @@ if dbname:
 else:
     DB()
 
+async def add_manga_options(chat_id, output):
+  db = DB()
+  chat_options = await db.get(MangaOutput, str(chat_id))
+  if chat_options:
+    chat_options.output = output
+  else:
+    chat_options = MangaOutput(user_id=str(chat_id), output=output)
+  try:
+    await db.add(chat_options)
+  except:
+    pass
 
+async def ask_q(msg: Message, text: str, filters=filters.text) -> Tuple[Message, Message]:
+  status = await msg.reply_text(text)
+  listener = await app.listen(msg.chat.id, filters=filters)
+  return status, listener 
+
+async get_manga_thumb(card: MangaCard) -> str:
+  if not os.path.isdir("thumbs"):
+    os.makedirs("thumbs")
+    
+  thumb_path = os.path.join("thumbs", card+".jpg")
+  
+  if os.path.exists(thumb_path):
+    return thumb_path 
+    
+  with open(thumb_path, "wb") as f:
+    content = await card.client.get_url(card.picture_url)
+    f.write(content)
+    return thumb_path
+    
 @bot.on_message(filters=~(filters.private & filters.incoming))
 async def on_chat_or_channel_message(client: Client, message: Message):
     pass
@@ -228,7 +261,43 @@ async def on_subs(client: Client, message: Message):
     text = "\n".join(body)
     await message.reply(f'Your subscriptions:\n\n{text}', disable_web_page_preview=True)
 
+@bot.on_message(filters=filters.command("addsub") filters.user(SUDOS))
+async def add_msub(client: Client, message: Message):
+  db = DB()
+  try:
+    _, manga_url, manga_chat, file_mode = message.text.split(" ")
+  except:
+    pass
 
+  try:
+    int(manga_chat)
+  except:
+    return await message.reply_text("<b>Invalid Chat Id Given, Cancelled the Process.</b>")
+
+  file_option = file_options.get(file_mode.lower().strip())
+  if not file_mode:
+    return await message.reply_text("<b>Invalid File Mode Given, Cancelled the Process.</b>")
+  await add_manga_options(chat_id, file_option)
+  
+  sub = await db.get(Subscription, (manga_url, manga_chat))
+  if not sub:
+    await db.add(Subscription(url=manga_url, user_id=manga_chat))
+    
+  await message.reply(f"Ok, Added Manga Subscription.\n\nUrl: <code>{manga_url}</code>\nChat: <code>{manga_chat}</code>\nFile Mode: <code>{file_mode.title()}</code>")
+
+@bot.on_message(filters=filters.command("rmsub") & filters.user(SUDOS))
+async def rm_msub(client: Message, message: Message):
+  try:
+    _, url, chat = message.text.split(" ")
+  except:
+    pass
+  db = DB()
+  sub = await db.get(Subscription, (url, chat))
+  if not sub:
+    return await message.reply_text("Subscription doesn't exist.")
+  await db.erase(sub)
+  await message.reply_text("Ok, Removed the Subscription.")
+@
 @bot.on_message(filters=filters.regex(r'^/cancel ([^ ]+)$'))
 async def on_cancel_command(client: Client, message: Message):
     db = DB()
@@ -254,7 +323,7 @@ async def on_unknown_command(client: Client, message: Message):
 
 
 @bot.on_message(filters=filters.text)
-async def on_message(client, message: Message):
+async def on_message(client, message: Messageq;l
     language_query[f"lang_None_{hash(message.text)}"] = (None, message.text)
     for language in plugin_dicts.keys():
         language_query[f"lang_{language}_{hash(message.text)}"] = (language, message.text)
@@ -326,8 +395,18 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
     full_pages[full_page_key] = []
     for result in results:
         chapters[result.unique()] = result
-        full_pages[full_page_key].append(result.unique())
-
+        full_pages[full_page_key].append(result.unique()) 
+    
+    results = await pagination.manga.client.chapters_from_page(await pagination.manga.client.get_url(pagination.manga.url), pagination.manga) 
+    
+    all_page_key = f'all_page_{hash("".join([result.unique() for result in results]))}'
+    all_pages[all_page_key] = []
+    for result in results:
+      if result.unique() in all_pages:
+        continue
+      all_pages[all_page_key].append(result.unique())
+    
+    
     db = DB()
     subs = await db.get(Subscription, (pagination.manga.url, str(callback.from_user.id)))
 
@@ -342,11 +421,13 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
     favourites[f"fav_{pagination.manga.unique()}"] = pagination.manga
     favourites[f"unfav_{pagination.manga.unique()}"] = pagination.manga
 
-    full_page = [[InlineKeyboardButton('Full Page', full_page_key)]]
+    full_page = [[InlineKeyboardButton('Full Page', full_page_key)]] 
+    
+    all_page = [[InlineKeyboardButton('All Chapters', all_page_key)]]
 
     buttons = InlineKeyboardMarkup(fav + footer + [
         [InlineKeyboardButton(result.name, result.unique())] for result in results
-    ] + full_page + footer)
+    ] + full_page + all_page + footer)
 
     if pagination.message is None:
         try:
@@ -411,7 +492,7 @@ async def chapter_click(client, data, chat_id):
             if not chapter.pictures:
                 return await bot.send_message(chat_id, f'There was an error parsing this chapter or chapter is missing' +
                                               f', please check the chapter at the web\n\n{caption}')
-            ch_name = clean(f'{clean(chapter.manga.name, 25)} - {chapter.name}', 45)
+            ch_name = clean(f'{chapter.name.replace("Chapter", "Ch -")} {clean(chapter.manga.name, 25)}', 45)
             try:
                 pdf, thumb_path = fld2pdf(pictures_folder, ch_name)
             except Exception as e:
@@ -444,10 +525,10 @@ async def chapter_click(client, data, chat_id):
 
         chapterFile = await db.get(ChapterFile, chapter.url)
 
-        caption = f'{chapter.manga.name} - {chapter.name}\n'
+        caption = f'{chapter.name.replace("Chapter", "Ch -")} {chapter.manga.name}\n'
         if options & OutputOptions.Telegraph:
             caption += f'[Read on telegraph]({chapterFile.telegraph_url})\n'
-        caption += f'[Read on website]({chapter.get_url()})'
+        #caption += f'[Read on website]({chapter.get_url()})'
         media_docs = []
         if options & OutputOptions.PDF:
             media_docs.append(InputMediaDocument(chapterFile.file_id))
@@ -480,7 +561,39 @@ async def full_page_click(client: Client, callback: CallbackQuery):
             print(e)
         await asyncio.sleep(0.5)
 
-
+async def all_page_click(client: Client, callback: CallbackQuery):
+  chapters_data = all_pages[callback.data]
+  status, chat_q = await ask_q(callback_query.message, "Ok, Send Me the Id of Chat where you want to Bulk Upload this Manga.")
+  
+  if chat_q.text.lower() in ["stop", "/quit"]:
+    return
+  
+  try:
+    chat_id = int(chat_q.text)
+  except:
+    return await status.edit_text("<b>Invalid Chat Id Given, Cancelled the Process.</b>")
+  
+  await status.delete()
+  
+  status, options_q = await ask_q(callback.message, "Tell me the chapter files format. You can choose in ↓\n→<code>Pdf</code>\n→<code>Cbz</code>\n→<code>Both</code>")
+  
+  file_option = file_options.get(options_q.text.lower())
+  if not file_option:
+    return await status.edit_text("<b>Invalid File Format, Cancelled the Process.</b>")
+   
+  await add_manga_options(chat_id, file_option)
+  
+  await status.edit_text("All Set, Bulk Uploading of all Chapters Started...")
+  
+  for chapter_data in reversed(chapters_data):
+        try:
+            await chapter_click(client, chapter_data, int(chat_q.text))
+        except Exception as e:
+            print(e)
+        await asyncio.sleep(0.5)
+  
+  await status.edit_text("Bulk Upload Done!")
+  
 async def favourite_click(client: Client, callback: CallbackQuery):
     action, data = callback.data.split('_')
     fav = action == 'fav'

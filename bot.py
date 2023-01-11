@@ -159,12 +159,12 @@ async def ask_q(msg: Message, text: str, as_reply: bool = False, filters=filters
     
   return status, listener 
 
-async def get_manga_thumb(card: MangaCard) -> str:
+async def get_manga_thumb(card: MangaCard) -> str:   
+  thumb_path = os.path.join("thumbs", card.unique()+".jpg")
+
   if not os.path.isdir("thumbs"):
     os.makedirs("thumbs")
-    
-  thumb_path = os.path.join("thumbs", card.name+".jpg")
-  
+
   if os.path.exists(thumb_path):
     return thumb_path 
     

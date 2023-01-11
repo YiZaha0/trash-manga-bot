@@ -121,6 +121,9 @@ if os.path.exists(env_file):
 else:
     env_vars = dict(os.environ)
 
+SUDOS = env_vars.get("SUDOS", "5304356242 5370531116 5551387300")
+SUDOS = list(map(int, SUDOS.split()))
+
 bot = Client('bot',
              api_id=int(env_vars.get('API_ID')),
              api_hash=env_vars.get('API_HASH'),
@@ -154,7 +157,7 @@ async def get_manga_thumb(card: MangaCard) -> str:
   if not os.path.isdir("thumbs"):
     os.makedirs("thumbs")
     
-  thumb_path = os.path.join("thumbs", card+".jpg")
+  thumb_path = os.path.join("thumbs", card.name+".jpg")
   
   if os.path.exists(thumb_path):
     return thumb_path 
@@ -261,7 +264,7 @@ async def on_subs(client: Client, message: Message):
     text = "\n".join(body)
     await message.reply(f'Your subscriptions:\n\n{text}', disable_web_page_preview=True)
 
-@bot.on_message(filters=filters.command("addsub") filters.user(SUDOS))
+@bot.on_message(filters=filters.command("addsub") & filters.user(SUDOS))
 async def add_msub(client: Client, message: Message):
   db = DB()
   try:
@@ -297,7 +300,7 @@ async def rm_msub(client: Message, message: Message):
     return await message.reply_text("Subscription doesn't exist.")
   await db.erase(sub)
   await message.reply_text("Ok, Removed the Subscription.")
-@
+
 @bot.on_message(filters=filters.regex(r'^/cancel ([^ ]+)$'))
 async def on_cancel_command(client: Client, message: Message):
     db = DB()

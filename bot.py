@@ -150,7 +150,7 @@ async def ask_q(msg: Message, text: str, filters=filters.text) -> Tuple[Message,
   listener = await app.listen(msg.chat.id, filters=filters)
   return status, listener 
 
-async get_manga_thumb(card: MangaCard) -> str:
+async def get_manga_thumb(card: MangaCard) -> str:
   if not os.path.isdir("thumbs"):
     os.makedirs("thumbs")
     

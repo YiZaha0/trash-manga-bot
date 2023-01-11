@@ -400,7 +400,7 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
         chapters[result.unique()] = result
         full_pages[full_page_key].append(result.unique()) 
     
-    results = await pagination.manga.client.chapters_from_page(await pagination.manga.client.get_url(pagination.manga.url), pagination.manga) 
+    results = pagination.manga.client.chapters_from_page(await pagination.manga.client.get_url(pagination.manga.url), pagination.manga) 
     
     all_page_key = f'all_page_{hash("".join([result.unique() for result in results]))}'
     all_pages[all_page_key] = []

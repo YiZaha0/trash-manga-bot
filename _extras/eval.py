@@ -2,8 +2,7 @@ import io
 import sys
 import traceback
 
-from bot import bot, filters
-from . import SUDOS
+from bot import bot, filters, SUDOS
 
 MAX_MESSAGE_LENGTH = 4096
 

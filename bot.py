@@ -571,7 +571,7 @@ async def full_page_click(client: Client, callback: CallbackQuery):
 
 async def all_page_click(client: Client, callback: CallbackQuery):
   chapters_data = all_pages[callback.data]
-  status, chat_q = await ask_q(callback_query.message, "Ok, Send Me the Id of Chat where you want to Bulk Upload this Manga.")
+  status, chat_q = await ask_q(callback.message, "Ok, Send Me the Id of Chat where you want to Bulk Upload this Manga.")
   
   if chat_q.text.lower() in ["stop", "/quit"]:
     return
@@ -600,7 +600,7 @@ async def all_page_click(client: Client, callback: CallbackQuery):
             print(e)
         await asyncio.sleep(0.5)
   
-  await status.edit_text("Bulk Upload Done!")
+  await status.edit_text("<b>Bulk Upload Completed!</b>")
   
 async def favourite_click(client: Client, callback: CallbackQuery):
     action, data = callback.data.split('_')

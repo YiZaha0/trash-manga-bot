@@ -20,6 +20,7 @@ from plugins import MangaClient, ManhuaKoClient, MangaCard, MangaChapter, Manhua
 import os
 
 from pyrogram import Client, filters
+from pyromod import listen
 from typing import Dict, Tuple, List, TypedDict
 
 from models.db import DB, ChapterFile, Subscription, LastChapter, MangaName, MangaOutput
@@ -656,6 +657,8 @@ async def on_callback_query(client, callback: CallbackQuery):
         await chapter_click(client, callback.data, callback.from_user.id)
     elif callback.data in full_pages:
         await full_page_click(client, callback)
+    elif callback.data in all_pages:
+        await all_page_click(client, callback)
     elif callback.data in favourites:
         await favourite_click(client, callback)
     elif is_pagination_data(callback):

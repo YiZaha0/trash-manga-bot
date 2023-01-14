@@ -27,6 +27,7 @@ from models.db import DB, ChapterFile, Subscription, LastChapter, MangaName, Man
 from pagination import Pagination
 from plugins.client import clean
 from tools.flood import retry_on_flood
+from pathlib import Path
 
 mangas: Dict[str, MangaCard] = dict()
 chapters: Dict[str, MangaChapter] = dict()
@@ -160,15 +161,14 @@ async def ask_q(msg: Message, text: str, as_reply: bool = False, filters=filters
   return status, listener 
 
 async def get_manga_thumb(card: MangaCard) -> str:   
-  thumb_path = os.path.join("thumbs", card.unique()+".jpg")
-
-  if not os.path.isdir("thumbs"):
-    os.makedirs("thumbs")
+  thumb_path = os.path.join("cache/{card.client.name}/pictures/", card.manga.unique()+".jpg")
 
   if os.path.exists(thumb_path):
     return thumb_path 
-    
-  with open(thumb_path, "wb") as f:
+
+  path = Path(thumb_path)
+  path.parent.mkdir(parents=True, exist_ok=True)
+  with path.open("wb") as f:
     content = await card.client.get_url(card.picture_url)
     f.write(content)
     return thumb_path
@@ -467,7 +467,9 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
                                            f'{pagination.manga.get_url()}', reply_markup=buttons)
             pagination.message = message
 
-        asyncio.create_task(message.download(f"thumbs/{pagination.manga.unique()}.jpg"))
+        thumb_path = f'./cache/{pagination.manga.client.name}/pictures/{pagination.manga.unique()}.jpg'
+        if not os.path.exists(thumb_path):
+            asyncio.create_task(message.download(thumb_path))
 
     else:
         await bot.edit_message_reply_markup(

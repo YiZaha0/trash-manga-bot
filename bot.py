@@ -555,11 +555,10 @@ async def chapter_click(client, data, chat_id):
 
         chapterFile = await db.get(ChapterFile, chapter.url)
         
-        caption = ""
-        #caption = f'{chapter.name.replace("Chapter", "Ch -")} {chapter.manga.name}\n'
+        caption = f'{chapter.name.replace("Chapter", "Ch -")} {chapter.manga.name}\n' if not str(chat_id).startswith("-100") else ""
         if options & OutputOptions.Telegraph:
-            caption += f'[Read on telegraph]({chapterFile.telegraph_url})\n'
-        #caption += f'[Read on website]({chapter.get_url()})'
+            caption += f'[Read on telegraph]({chapterFile.telegraph_url})\n' 
+        caption += f'[Read on website]({chapter.get_url()})' if not str(chat_id).startswith("-100") else ""
         media_docs = []
         if options & OutputOptions.PDF:
             media_docs.append(InputMediaDocument(chapterFile.file_id))

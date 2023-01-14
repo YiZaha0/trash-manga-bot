@@ -1,2 +1,3 @@
 echo "Started..."
-python main.py
+git pull -f -q 
+python3 main.py

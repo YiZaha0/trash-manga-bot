@@ -5,6 +5,9 @@ import glob
 import os
 import uvloop
 
+#Tweaking for personal use
+os.makedirs("thumbs")
+
 #due to Pyro, it is done here.
 uvloop.install()
 

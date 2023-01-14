@@ -46,7 +46,7 @@ async def _(client, message):
 
     final_output = "**EVAL**: "
     final_output += f"`{cmd}`\n\n"
-    final_output += "**OUTPUT***:\n"
+    final_output += "**OUTPUT**:\n"
     final_output += f"`{evaluation.strip()}`\n"
 
     if len(final_output) > MAX_MESSAGE_LENGTH:

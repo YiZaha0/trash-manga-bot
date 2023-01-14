@@ -458,7 +458,6 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
                                            f'{pagination.manga.name}\n'
                                            f'{pagination.manga.get_url()}', reply_markup=buttons)
             pagination.message = message
-            asyncio.create_task(message.download(f"thumbs/{pagination.manga.unique()}.jpg"))
         except pyrogram.errors.BadRequest as e:
             file_name = f'pictures/{pagination.manga.unique()}.jpg'
             await pagination.manga.client.get_cover(pagination.manga, cache=True, file_name=file_name)
@@ -467,6 +466,9 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
                                            f'{pagination.manga.name}\n'
                                            f'{pagination.manga.get_url()}', reply_markup=buttons)
             pagination.message = message
+
+        asyncio.create_task(message.download(f"thumbs/{pagination.manga.unique()}.jpg"))
+
     else:
         await bot.edit_message_reply_markup(
             callback.from_user.id,

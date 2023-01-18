@@ -482,7 +482,7 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
         )
 
 
-async def chapter_click(client, data, chat_id):
+async def chapter_click(client, data, chat_id, custom_caption=""):
     lock = locks.get(chat_id)
     if not lock:
         locks[chat_id] = asyncio.Lock()
@@ -558,7 +558,7 @@ async def chapter_click(client, data, chat_id):
 
         chapterFile = await db.get(ChapterFile, chapter.url)
         
-        caption = f'{chapter.name.replace("Chapter", "Ch -")} {chapter.manga.name}\n' if not str(chat_id).startswith("-100") else "➤ Main Channel: @manga_universe"
+        caption = f'{chapter.name.replace("Chapter", "Ch -")} {chapter.manga.name}\n' if not str(chat_id).startswith("-100") else custom_caption
         if options & OutputOptions.Telegraph:
             caption += f'[Read on telegraph]({chapterFile.telegraph_url})\n' 
         caption += f'[Read on website]({chapter.get_url()})' if not str(chat_id).startswith("-100") else ""
@@ -800,7 +800,7 @@ async def update_mangas():
                 if sub in blocked:
                     continue
                 try:
-                    await chapter_click(bot, chapter.unique(), int(sub))
+                    await chapter_click(bot, chapter.unique(), int(sub), custom_caption="➤ Main Channel: @manga_universe")
                 except pyrogram.errors.UserIsBlocked:
                     print(f'User {sub} blocked the bot')
                     await remove_subscriptions(sub)

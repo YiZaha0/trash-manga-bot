@@ -113,7 +113,7 @@ class MangaClient(ClientSession, metaclass=LanguageSingleton):
             ext = picture.split('.')[-1]
             file_name = f'{folder_name}/{format(i, "05d")}.{ext}'
             Process.append(
-              self.download_picture(picture, filename, manga_chapter)
+              self.download_picture(picture, file_name, manga_chapter)
             )
             i += 1
         

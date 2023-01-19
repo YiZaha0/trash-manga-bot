@@ -130,7 +130,8 @@ bot = Client('bot',
              api_id=int(env_vars.get('API_ID')),
              api_hash=env_vars.get('API_HASH'),
              bot_token=env_vars.get('BOT_TOKEN'),
-             ipv6=bool(env_vars.get('IPV6_CLIENT')))
+             ipv6=bool(env_vars.get('IPV6_CLIENT')),
+             max_concurrent_transmissions=3)
 
 dbname = env_vars.get('DATABASE_URL_PRIMARY') or env_vars.get('DATABASE_URL')
 if dbname:

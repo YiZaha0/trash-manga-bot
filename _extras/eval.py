@@ -2,6 +2,7 @@ import io
 import sys
 import traceback
 
+from pyrogram.enums import ParseMode
 from bot import bot, filters, SUDOS
 
 MAX_MESSAGE_LENGTH = 4096
@@ -10,7 +11,7 @@ MAX_MESSAGE_LENGTH = 4096
 async def _(client, message):
     status_message = await message.reply_text("Processing ...")
     try:
-        cmd = message.text.split(" ", maxsplit=1)[1]
+        cmd = message.text.markdown.split(" ", maxsplit=1)[1]
     except:
         return await status_message.edit_text("Give code to evaluate...")
 
@@ -60,7 +61,7 @@ async def _(client, message):
                 quote=True,
             )
     else:
-        await reply_to_.reply_text(final_output, parse_mode="markdown", quote=True)
+        await reply_to_.reply_text(final_output, parse_mode=ParseMode.MARKDOWN, quote=True)
     await status_message.delete()
 
 

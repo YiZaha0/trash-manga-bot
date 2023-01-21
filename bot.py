@@ -7,6 +7,7 @@ import re
 from dataclasses import dataclass
 import datetime as dt
 import json
+import traceback 
 
 import pyrogram.errors
 from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, InputMediaDocument
@@ -807,6 +808,7 @@ async def update_mangas():
                     await remove_subscriptions(sub)
                     blocked.add(sub)
                 except BaseException as e:
+                    traceback.print_exc()
                     print(f'An exception occurred sending new chapter: {e}')
                 await asyncio.sleep(0.5)
             await asyncio.sleep(1)
@@ -823,6 +825,8 @@ async def manga_updater():
             wait_time = max((dt.timedelta(seconds=wait_time) - elapsed).total_seconds(), 0)
             print(f'Time elapsed updating mangas: {elapsed}, waiting for {wait_time}')
         except BaseException as e:
+            traceback.print_exc()
             print(f'An exception occurred during chapters update: {e}')
+
         if wait_time:
             await asyncio.sleep(wait_time)

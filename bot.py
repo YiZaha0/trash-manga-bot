@@ -437,7 +437,7 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
     db = DB()
     subs = await db.get(Subscription, (pagination.manga.url, str(callback.from_user.id)))
 
-    prev = [InlineKeyboardButton('<<', f'{pagination.id}_{pagination.page - 1}')]
+    prev = [InlineKeyboardButton('<<', f'{pagination.id}_{pagination.page - 1 if pagination.page != 0 else -2}')]
     next_ = [InlineKeyboardButton('>>', f'{pagination.id}_{pagination.page + 1 if pagination.page != 0 else 1}')]
     footer = [prev + next_]
 

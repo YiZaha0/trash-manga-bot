@@ -439,7 +439,7 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
 
     prev = [InlineKeyboardButton('<<', f'{pagination.id}_{pagination.page - 1}')]
     next_ = [InlineKeyboardButton('>>', f'{pagination.id}_{pagination.page + 1}')]
-    footer = [prev + next_] if pagination.page > 1 else [next_]
+    footer = [prev + next_]
 
     fav = [[InlineKeyboardButton(
         "Unsubscribe" if subs else "Subscribe",

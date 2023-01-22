@@ -7,11 +7,6 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
-# Install apt requirements
-RUN apt update -y && \ 
-    apt install -y --no-install-recommends git && \
-    rm -rf /var/lib/apt/lists/* 
-
 # Cloning the repository
 RUN git clone -b custom https://github.com/YiZaha0/trash-manga-bot /app
 

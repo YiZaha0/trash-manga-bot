@@ -98,7 +98,7 @@ class AsuraScansClient(MangaClient):
 
         content = await self.get_url(request_url)
 
-        return self.chapters_from_page(content, manga_card)([(page - 1) * 20:page * 20] if page != 0 else [0: 20])
+        return self.chapters_from_page(content, manga_card)([(page - 1) * 20:page * 20] if page != 0 else [-20:])
 
     async def iter_chapters(self, manga_url: str, manga_name) -> AsyncIterable[MangaChapter]:
         manga_card = MangaCard(self, manga_name, manga_url, '')

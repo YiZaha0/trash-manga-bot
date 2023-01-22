@@ -8,7 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Install apt requirements
-RUN apt update -y && apt upgrade -y && \ 
+RUN apt update -y && \ 
     apt install -y --no-install-recommends git && \
     rm -rf /var/lib/apt/lists/* 
 

@@ -57,7 +57,7 @@ async def _(client, message):
                 document=out_file,
                 caption=f"`{cmd[: MAX_MESSAGE_LENGTH // 4 - 1]}`",
                 disable_notification=True,
-                parse_mode="markdown",
+                parse_mode=ParseMode.MARKDOWN,
                 quote=True,
             )
     else:

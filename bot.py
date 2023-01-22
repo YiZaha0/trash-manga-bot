@@ -657,7 +657,7 @@ async def favourite_click(client: Client, callback: CallbackQuery):
 
 def is_pagination_data(callback: CallbackQuery):
     data = callback.data
-    match = re.match(r'\d+_\d+', data)
+    match = re.match(r'\d+_-?(?:\d+)', data)
     if not match:
         return False
     pagination_id = int(data.split('_')[0])

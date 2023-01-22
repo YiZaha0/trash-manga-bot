@@ -437,9 +437,9 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
     db = DB()
     subs = await db.get(Subscription, (pagination.manga.url, str(callback.from_user.id)))
 
-    prev = [InlineKeyboardButton('<<', f'{pagination.id}_{pagination.page - 1 if pagination.page != 0 else -2}')]
-    next_ = [InlineKeyboardButton('>>', f'{pagination.id}_{pagination.page + 1 if pagination.page != 0 else 1}')]
-    footer = [prev + next_]
+    prev = [InlineKeyboardButton('<<', f'{pagination.id}_{pagination.page - 1}')]
+    next_ = [InlineKeyboardButton('>>', f'{pagination.id}_{pagination.page + 1}')]
+    footer = [prev + next_] if pagination.page > 1 else [next_]
 
     fav = [[InlineKeyboardButton(
         "Unsubscribe" if subs else "Subscribe",
@@ -657,7 +657,7 @@ async def favourite_click(client: Client, callback: CallbackQuery):
 
 def is_pagination_data(callback: CallbackQuery):
     data = callback.data
-    match = re.match(r'\d+_-?(?:\d+)', data)
+    match = re.match(r'\d+_\d+', data)
     if not match:
         return False
     pagination_id = int(data.split('_')[0])

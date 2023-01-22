@@ -13,7 +13,7 @@ RUN apt update -y && \
     rm -rf /var/lib/apt/lists/* 
 
 # Cloning the repository
-RUN git clone https://github.com/YiZaha0/trash-manga-bot /app
+RUN git clone -b custom https://github.com/YiZaha0/trash-manga-bot /app
 
 WORKDIR /app
 

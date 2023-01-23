@@ -1,5 +1,5 @@
 
-import os
+import os, asyncio
 from abc import abstractmethod, ABC
 from dataclasses import dataclass
 from typing import List, AsyncIterable
@@ -101,6 +101,14 @@ class MangaClient(ClientSession, metaclass=LanguageSingleton):
         manga_chapter.pictures = await self.pictures_from_chapters(content, response)
 
         return manga_chapter
+    
+    async download_picture(self, picture: str, file_name: str, manga: MangaChapter):
+      for _ in range(3):
+        req = await self.get_picture(manga_chapter, picture, file_name=file_name, cache=True, req_content=False)
+        if str(req.status).startswith('2'):
+          break
+      else:
+        raise ValueError 
 
     async def download_pictures(self, manga_chapter: MangaChapter):
         if not manga_chapter.pictures:
@@ -108,18 +116,17 @@ class MangaClient(ClientSession, metaclass=LanguageSingleton):
 
         folder_name = f'{clean(manga_chapter.manga.name)}/{clean(manga_chapter.name)}'
         i = 0
+        Process = []
         for picture in manga_chapter.pictures:
             ext = picture.split('.')[-1]
             file_name = f'{folder_name}/{format(i, "05d")}.{ext}'
-            for _ in range(3):
-                req = await self.get_picture(manga_chapter, picture, file_name=file_name, cache=True,
-                                             req_content=False)
-                if str(req.status).startswith('2'):
-                    break
-            else:
-                raise ValueError
+            Process.append(
+              self.download_picture(picture, file_name, manga_chapter)
+            )
             i += 1
-
+            
+        await asyncio.gather(*Process)
+        
         return Path(f'cache/{manga_chapter.client.name}') / folder_name
 
     async def get_picture(self, manga_chapter: MangaChapter, url, *args, **kwargs):

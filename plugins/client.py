@@ -102,7 +102,7 @@ class MangaClient(ClientSession, metaclass=LanguageSingleton):
 
         return manga_chapter
     
-    async def download_picture(self, picture: str, file_name: str, manga: MangaChapter):
+    async def download_picture(self, picture: str, file_name: str, manga_chapter: MangaChapter):
       for _ in range(3):
         req = await self.get_picture(manga_chapter, picture, file_name=file_name, cache=True, req_content=False)
         if str(req.status).startswith('2'):

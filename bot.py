@@ -524,7 +524,7 @@ async def chapter_click(client, data, chat_id, custom_caption=""):
             if not chapter.pictures:
                 return await bot.send_message(chat_id, f'There was an error parsing this chapter or chapter is missing' +
                                               f', please check the chapter at the web\n\n{caption}')
-            ch_name = clean(f'{chapter.name.replace("Chapter", "Ch -")} {clean(chapter.manga.name, 25)}', 45) if chapter.client != "Manhwa18" else clean(f'{chapter.name.replace("Chapter", "Ch -")} {clean(chapter.manga.name, 25)}', 31) + " @Adult_Mangas"
+            ch_name = clean(f'{chapter.name.replace("Chapter", "Ch -")} {clean(chapter.manga.name, 25)}', 45) if chapter.client.name != "Manhwa18" else clean(f'{chapter.name.replace("Chapter", "Ch -")} {clean(chapter.manga.name, 25)}', 31) + " @Adult_Mangas"
             try:
                 pdf, thumb_path = fld2pdf(pictures_folder, ch_name)
             except Exception as e:

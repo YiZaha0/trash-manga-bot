@@ -618,7 +618,7 @@ async def all_page_click(client: Client, callback: CallbackQuery):
   await status.delete()
   
   status = await callback.message.reply_text("<b>All Set, Bulk Uploading of all Chapters Started, Will take Time to Upload...</b>")
-  .
+ 
   for chapter_data in reversed(chapters_data):
     try:
       try:

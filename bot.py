@@ -618,14 +618,17 @@ async def all_page_click(client: Client, callback: CallbackQuery):
   await status.delete()
   
   status = await callback.message.reply_text("<b>All Set, Bulk Uploading of all Chapters Started, Will take Time to Upload...</b>")
-  
+  .
   for chapter_data in reversed(chapters_data):
-        try:
-            await chapter_click(client, chapter_data, chat_id)
-        except Exception as e:
-            print(e)
-        await asyncio.sleep(0.5)
-  
+    try:
+      try:
+        await chapter_click(client, chapter_data, chat_id)
+       except:
+        await chapter_click(client, chapter_data, chat_id)
+    except Exception as e:
+      print(e)
+    await asyncio.sleep(0.5)
+         
   await status.edit_text("<b>Bulk Upload Completed!</b>")
   
 async def favourite_click(client: Client, callback: CallbackQuery):

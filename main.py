@@ -5,9 +5,6 @@ import glob
 import os
 import uvloop
 
-#due to Pyro, it is done here.
-uvloop.install()
-
 from bot import bot, manga_updater
 from models import DB
 from pathlib import Path

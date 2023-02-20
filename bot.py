@@ -623,7 +623,7 @@ async def all_page_click(client: Client, callback: CallbackQuery):
     try:
       try:
         await chapter_click(client, chapter_data, chat_id)
-       except:
+      except:
         await chapter_click(client, chapter_data, chat_id)
     except Exception as e:
       print(e)

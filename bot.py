@@ -421,8 +421,8 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
         full_pages[full_page_key].append(result.unique()) 
     
     all_page_key = f"all_page_{pagination.manga.unique()}"
-    all_results = all_pages.get(all_page_key, None)
-    if all_results is None:
+    
+    if all_page_key not in all_pages:
       all_results = pagination.manga.client.chapters_from_page(await pagination.manga.client.get_url(pagination.manga.url), pagination.manga)
       
       all_pages[all_page_key] = []
@@ -437,9 +437,9 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
     db = DB()
     subs = await db.get(Subscription, (pagination.manga.url, str(callback.from_user.id)))
 
-    prev = [InlineKeyboardButton('<<', f'{pagination.id}_{pagination.page - 1}' if pagination.page != 0 else f'{pagination.id}_{len(all_results)-2}')]
-    next_ = [InlineKeyboardButton('>>', f'{pagination.id}_{pagination.page + 1}' if pagination.page != (len(all_results)-2) else f'{pagination.id}_0')]
-    footer = [prev + next_] 
+    prev = [InlineKeyboardButton('<<', f'{pagination.id}_{pagination.page - 1}')]
+    next_ = [InlineKeyboardButton('>>', f'{pagination.id}_{pagination.page + 1}')]
+    footer = [prev + next_] if pagination.page > 1 else [next_]
 
     fav = [[InlineKeyboardButton(
         "Unsubscribe" if subs else "Subscribe",

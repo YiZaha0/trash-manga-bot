@@ -423,7 +423,7 @@ async def manga_click(client, callback: CallbackQuery, pagination: Pagination = 
     all_page_key = f"all_page_{pagination.manga.unique()}"
     
     if all_page_key not in all_pages:
-      all_results = pagination.manga.client.chapters_from_page(await pagination.manga.client.get_url(pagination.manga.url), pagination.manga)
+      all_results = [ch async for ch in pagination.manga.client.iter_chapters(pagination.manga.url, pagination.manga.name)]
       
       all_pages[all_page_key] = []
       for result in all_results:

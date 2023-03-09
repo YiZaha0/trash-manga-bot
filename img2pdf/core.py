@@ -14,10 +14,10 @@ def fld2pdf(folder: Path, out: str):
     
     files = [file for file in folder.glob(r'*') if re.match(r'.*\.(jpg|png|jpeg|webp)', file.name)]
     files.sort(key=lambda x: x.name)
-    thumb_path = make_thumb(folder, files)
+    # thumb_path = make_thumb(folder, files)
     pdf = folder / f'{out}.pdf'
     img2pdf(files, pdf)
-    return pdf, thumb_path
+    return pdf # , thumb_path
 
 
 def new_img(path: Path) -> Image.Image:

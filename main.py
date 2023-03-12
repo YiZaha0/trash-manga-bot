@@ -4,7 +4,7 @@ import asyncio as aio
 import glob
 import os
 import uvloop
-uvloop.install()
+# uvloop.install()
 
 from bot import bot, manga_updater
 from models import DB
